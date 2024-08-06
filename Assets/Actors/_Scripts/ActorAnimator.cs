@@ -77,7 +77,7 @@ public class ActorAnimator : MonoBehaviour
       _ => ActorOrientation.North
     };
 
-    Debug.Log(angle + ":" + orientation);
+    // Debug.Log(angle + ":" + orientation);
 
     return orientation;
   }

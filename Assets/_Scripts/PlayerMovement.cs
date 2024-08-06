@@ -8,15 +8,19 @@ public class PlayerMovement : MonoBehaviour, IMover
     new Rigidbody2D rigidbody;
 
     public Vector2 MoveDir { get; private set; }
+    public Vector2 LastMoveDir { get; private set; }
 
     void Awake()
     {
         playerControls = new();
         rigidbody = GetComponent<Rigidbody2D>();
+
     }
 
     void Start()
     {
+        LastMoveDir = new Vector2(0, -1f);
+
         playerControls.PlayerInput.Enable();
     }
 
@@ -38,6 +42,11 @@ public class PlayerMovement : MonoBehaviour, IMover
     void InputManagement()
     {
         MoveDir = playerControls.PlayerInput.Move.ReadValue<Vector2>().normalized;
+
+        if (MoveDir.magnitude > 0)
+        {
+            LastMoveDir = MoveDir;
+        }
     }
 
     void Move()
