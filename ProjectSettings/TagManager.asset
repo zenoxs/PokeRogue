@@ -47,7 +47,7 @@ TagManager:
   - name: Wall Tiles
     uniqueID: 141232025
     locked: 0
-  - name: Player
+  - name: Actors
     uniqueID: 1466012277
     locked: 0
   - name: Effects
