@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEditor.U2D.Sprites;
 
-public class TextureUtilities
+public class TextureUtils
 {
     public static (string, Texture2D) LoadAndCopyTexture(string sourceImgPath, string outputFolderPath)
     {
@@ -29,7 +29,9 @@ public class TextureUtilities
 
         // Clone the texture
         var clonedTexture = CloneTexture(sourceTexture, Path.GetFileNameWithoutExtension(fileName));
-        Debug.Log("Texture loaded and cloned successfully.");
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
 
         return (outputFilePath, clonedTexture);
     }
@@ -47,15 +49,15 @@ public class TextureUtilities
         return cloned;
     }
 
-    public static void SliceTextureIntoSprites(Texture2D texture, string texturePath, int spriteWidth, int spriteHeight)
+    public static List<Sprite> SliceTextureIntoSprites(Texture2D texture, string texturePath, int spriteWidth, int spriteHeight)
     {
-        var relativeOutputFilePath = Path.Join("Assets", Path.GetRelativePath(Application.dataPath, texturePath));
-        TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(relativeOutputFilePath);
+        var relativeTexturePath = AssetUtils.GetAssetRelativePath(texturePath);
+        TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(relativeTexturePath);
 
         if (importer == null)
         {
-            Debug.LogError("Could not find texture at path: " + relativeOutputFilePath);
-            return;
+            Debug.LogError("Could not find texture at path: " + relativeTexturePath);
+            return new();
         }
 
         importer.isReadable = true;
@@ -109,11 +111,11 @@ public class TextureUtilities
 
 
         // Apply changes to the importer and re-import the asset
-        AssetDatabase.ImportAsset(relativeOutputFilePath, ImportAssetOptions.ForceUpdate);
+        AssetDatabase.ImportAsset(relativeTexturePath, ImportAssetOptions.ForceUpdate);
         AssetDatabase.Refresh();
 
         // Load the sprites from the texture
-        Object[] sprites = AssetDatabase.LoadAllAssetsAtPath(relativeOutputFilePath);
+        Object[] sprites = AssetDatabase.LoadAllAssetsAtPath(relativeTexturePath);
 
         var generatedSprites = new List<Sprite>();
 
@@ -126,6 +128,8 @@ public class TextureUtilities
         }
 
         Debug.Log("Texture sliced into sprites successfully.");
+
+        return generatedSprites;
 
     }
 
