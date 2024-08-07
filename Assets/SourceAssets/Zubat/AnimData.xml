@@ -18,7 +18,7 @@
 				<Duration>6</Duration>
 			</Durations>
 		</Anim>
-		<!-- <Anim>
+		<Anim>
 			<Name>Attack</Name>
 			<Index>1</Index>
 			<FrameWidth>72</FrameWidth>
@@ -241,6 +241,6 @@
 			<Durations>
 				<Duration>4</Duration>
 			</Durations>
-		</Anim> -->
+		</Anim>
 	</Anims>
 </AnimData>

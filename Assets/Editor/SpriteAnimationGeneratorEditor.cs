@@ -11,6 +11,7 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
 {
     private string outputPath = "Assets/Animations/";
     private string sourcePath = "";
+    private string assetName = "";
 
     private static ActorOrientation[] spriteOrientation = new[]
     {
@@ -65,6 +66,8 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
         GUILayout.EndHorizontal();
         #endregion
 
+        assetName = EditorGUILayout.TextField("Asset Name", assetName);
+
         if (GUILayout.Button("Generate Animations"))
         {
             if (sourcePath != null && outputPath != null)
@@ -98,7 +101,8 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
             if (animInfo is Anim anim)
             {
                 var sourceImgPath = Path.Join(sourcePath, anim.Name + "-Anim.png");
-                var (texturePath, texture) = TextureUtils.LoadAndCopyTexture(sourceImgPath, outputPath);
+                var outputAnimPath = Path.Join(outputPath, anim.Name);
+                var (texturePath, texture) = TextureUtils.LoadAndCopyTexture(sourceImgPath, outputAnimPath);
 
                 List<Sprite> sprites = TextureUtils.SliceTextureIntoSprites(texture, texturePath, anim.FrameWidth, anim.FrameHeight);
 
@@ -107,15 +111,15 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
                     // Height directions
                     foreach (var (orientation, row) in spriteOrientation.Select((value, i) => (value, i)))
                     {
-                        var clipName = orientation + "_" + anim.Name;
-                        var clip = CreateAnimationClip(clipName, row, anim.Durations, sprites);
+
+                        var clip = CreateAnimationClip(anim.Name, orientation, row, anim.Durations, sprites);
                         clips.Add(clip);
                     }
                 }
                 else
                 {
                     // Single direction
-                    var clip = CreateAnimationClip(anim.Name, 0, anim.Durations, sprites);
+                    var clip = CreateAnimationClip(anim.Name, null, 0, anim.Durations, sprites);
                     clips.Add(clip);
                 }
             }
@@ -128,11 +132,12 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
         EditorUtility.DisplayDialog("Success", "Animations generated successfully.", "OK");
     }
 
-    private AnimationClip CreateAnimationClip(string animName, int row, List<int> durations, List<Sprite> sprites)
+    private AnimationClip CreateAnimationClip(string animName, ActorOrientation? orientation, int row, List<int> durations, List<Sprite> sprites)
     {
         AnimationClip clip = new AnimationClip
         {
-            frameRate = 60
+            frameRate = durations.Aggregate((acc, duration) => acc + duration)
+
         };
 
         EditorCurveBinding spriteBinding = new EditorCurveBinding
@@ -155,16 +160,27 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
 
             Sprite sprite = sprites[frameIndex];
 
+            var duration = durations[i]; // Duration for this specific frame
+
+            // Calculate the cumulative time for this keyframe
+            float cumulativeTime = 0f;
+            for (int j = 0; j < i; j++)
+            {
+                cumulativeTime += durations[j] / clip.frameRate;
+            }
+
+            // Set the keyframe for the current frame duration
             keyFrames[i] = new ObjectReferenceKeyframe
             {
-                time = i / (float)clip.frameRate,
+                time = cumulativeTime,
                 value = sprite
             };
         }
 
         AnimationUtility.SetObjectReferenceCurve(clip, spriteBinding, keyFrames);
 
-        string path = AssetUtils.GetAssetRelativePath(Path.Combine(outputPath, animName + ".anim"));
+        var clipName = orientation != null ? orientation + "_" + animName : animName;
+        string path = AssetUtils.GetAssetRelativePath(Path.Combine(outputPath, animName, clipName + ".anim"));
         AssetDatabase.CreateAsset(clip, path);
 
         return clip;
@@ -173,7 +189,7 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
     private void CreateAnimatorController(List<AnimationClip> clips)
     {
         // Create Animator Controller
-        string controllerPath = AssetUtils.GetAssetRelativePath(Path.Combine(outputPath, "AnimatorController.controller"));
+        string controllerPath = AssetUtils.GetAssetRelativePath(Path.Combine(outputPath, assetName + "_Animator.controller"));
         AnimatorController animatorController = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
 
         foreach (AnimationClip clip in clips)
@@ -182,5 +198,6 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
             AnimatorState state = animatorController.AddMotion(clip);
             state.name = clip.name;
         }
+
     }
 }
