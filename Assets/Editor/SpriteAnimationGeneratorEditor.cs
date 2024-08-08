@@ -13,7 +13,7 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
     private string sourcePath = "";
     private string assetName = "";
 
-    private static ActorOrientation[] spriteOrientation = new[]
+    private static readonly ActorOrientation[] spriteOrientation = new[]
     {
         ActorOrientation.SouthWest,
         ActorOrientation.West,
@@ -24,6 +24,8 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
         ActorOrientation.SouthEast,
         ActorOrientation.South
     };
+
+    private static readonly string[] whiteListAnimation = new[] { "Walk", "Idle", "Attack" };
 
     [MenuItem("Tools/Sprite Animation Generator")]
     public static void ShowWindow()
@@ -42,7 +44,8 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
 
         if (GUILayout.Button("Select", GUILayout.Width(100)))
         {
-            sourcePath = EditorUtility.OpenFolderPanel("Source folder", "", "");
+            sourcePath = EditorUtility.OpenFolderPanel("Source folder", "Assets", "");
+            assetName = Path.GetFileName(sourcePath);
         }
 
         GUILayout.EndHorizontal();
@@ -55,7 +58,7 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
 
         if (GUILayout.Button("Select", GUILayout.Width(100)))
         {
-            outputPath = EditorUtility.OpenFolderPanel("Output folder", "", "");
+            outputPath = EditorUtility.OpenFolderPanel("Output folder", "Assets", "");
 
         }
 
@@ -94,6 +97,11 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
 
         foreach (var animInfo in animData.Anims)
         {
+            if (!whiteListAnimation.Contains(animInfo.Name))
+            {
+                continue;
+            }
+
             if (animInfo is Anim anim)
             {
                 var sourceImgPath = Path.Join(sourcePath, anim.Name + "-Anim.png");
@@ -163,6 +171,7 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
 
         ObjectReferenceKeyframe[] keyFrames = new ObjectReferenceKeyframe[durations.Count];
 
+        float cumulativeTime = 0f;
         for (int i = 0; i < durations.Count; i++)
         {
             int frameIndex = i + row * durations.Count;
@@ -174,24 +183,31 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
 
             Sprite sprite = sprites[frameIndex];
 
-            var duration = durations[i]; // Duration for this specific frame
-
-            // Calculate the cumulative time for this keyframe
-            float cumulativeTime = 0f;
-            for (int j = 0; j < i; j++)
-            {
-                cumulativeTime += durations[j] / clip.frameRate;
-            }
-
             // Set the keyframe for the current frame duration
             keyFrames[i] = new ObjectReferenceKeyframe
             {
                 time = cumulativeTime,
                 value = sprite
             };
+
+            var duration = durations[i]; // Duration for this specific frame
+
+            // Update the cumulative time for the next keyframe
+            cumulativeTime += duration / clip.frameRate;
         }
 
         AnimationUtility.SetObjectReferenceCurve(clip, spriteBinding, keyFrames);
+
+        // Add the AnimationEvent to call OnFinished at the end of the animation
+        AnimationEvent animationEvent = new AnimationEvent
+        {
+            time = cumulativeTime, // Set event time to the end of the animation
+            functionName = "OnFinished",
+            stringParameter = animName
+        };
+
+        AnimationUtility.SetAnimationEvents(clip, new[] { animationEvent });
+
 
         var clipName = orientation != null ? animName + "_" + orientation : animName;
         string path = AssetUtils.GetAssetRelativePath(Path.Combine(outputPath, assetName, animName, clipName + ".anim"));

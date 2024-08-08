@@ -41,6 +41,11 @@ public class ActorAnimator : MonoBehaviour
     return;
   }
 
+  public void OnFinished(string animName)
+  {
+    Debug.Log("Anim finished " + animName);
+  }
+
   public ActorOrientation GetOrientation() => facingOrientation;
 
   public void SetAnimatorController(RuntimeAnimatorController runtimeAnimatorController)
