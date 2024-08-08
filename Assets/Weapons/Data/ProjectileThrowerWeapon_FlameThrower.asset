@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0edd9c79673b75b48912e05a2b849f10, type: 3}
-  m_Name: FlameThrower
+  m_Name: ProjectileThrowerWeapon_FlameThrower
   m_EditorClassIdentifier: 
   <CooldownDuration>k__BackingField: 1
   <Damage>k__BackingField: 10
   <Speed>k__BackingField: 3
   <DestroyAfterSeconds>k__BackingField: 3
+  <Pierce>k__BackingField: 1
   <ProjectilePrefab>k__BackingField: {fileID: 1255292784285209594, guid: bb2129185dd81ed409e08887c13c04f5, type: 3}

@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour, IMover
 {
-    [SerializeField] private float moveSpeed;
     private Transform player;
+    private Enemy enemy;
 
     public Vector2 MoveDir { get; private set; }
 
@@ -11,7 +11,8 @@ public class EnemyMovement : MonoBehaviour, IMover
 
     private void Start()
     {
-        player = FindObjectOfType<PlayerMovement>().transform;
+        player = FindObjectOfType<Player>().transform;
+        enemy = GetComponent<Enemy>();
     }
 
     void Update()
@@ -21,6 +22,6 @@ public class EnemyMovement : MonoBehaviour, IMover
         {
             LastMoveDir = MoveDir;
         }
-        transform.position = Vector2.MoveTowards(transform.position, player.transform.position, moveSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, player.transform.position, enemy.Data.MoveSpeed * Time.deltaTime);
     }
 }

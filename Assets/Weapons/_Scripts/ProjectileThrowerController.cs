@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProjectileThrower : Weapon
+public class ProjectileThrowerController : WeaponController
 {
 
     [SerializeField] private ProjectileThrowerScriptableObject projectileThrowerData;
