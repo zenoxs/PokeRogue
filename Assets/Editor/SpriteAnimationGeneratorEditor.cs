@@ -189,6 +189,7 @@ public class SpriteAnimationGeneratorEditor : EditorWindow
     private void CreateAnimatorController(List<AnimationClip> clips)
     {
         // Create Animator Controller
+        // TODO: avoid creating a new controller if there is already one there
         string controllerPath = AssetUtils.GetAssetRelativePath(Path.Combine(outputPath, assetName + "_Animator.controller"));
         AnimatorController animatorController = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
 
