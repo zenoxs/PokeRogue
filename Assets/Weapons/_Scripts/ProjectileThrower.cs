@@ -6,8 +6,7 @@ using UnityEngine;
 public class ProjectileThrower : Weapon
 {
 
-    [SerializeField] private Projectile projectilePrefab;
-    [SerializeField] private float cooldownDuration;
+    [SerializeField] private ProjectileThrowerScriptableObject projectileThrowerData;
 
     IMover mover;
 
@@ -33,14 +32,14 @@ public class ProjectileThrower : Weapon
     private void ThrowProjectile()
     {
         ResetCooldown();
-        var projectileInstance = Instantiate(projectilePrefab);
+        var projectileInstance = Instantiate(projectileThrowerData.ProjectilePrefab);
 
         projectileInstance.transform.position = transform.position;
-        projectileInstance.Setup(mover.LastMoveDir);
+        projectileInstance.Setup(mover.LastMoveDir, projectileThrowerData);
     }
 
     private void ResetCooldown()
     {
-        currentCooldown = cooldownDuration;
+        currentCooldown = projectileThrowerData.CooldownDuration;
     }
 }

@@ -2,25 +2,23 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [Header("Projectile Stats")]
-    [SerializeField] private float damage;
-    [SerializeField] private float speed;
-    [SerializeField] private float destroyAfterSeconds;
-
     protected Vector3 shootDirection;
+
+    private IProjectileData projectileData;
 
     protected virtual void Start()
     {
-        Destroy(gameObject, destroyAfterSeconds);
+        Destroy(gameObject, projectileData.DestroyAfterSeconds);
     }
 
     private void Update()
     {
-        transform.position += speed * Time.deltaTime * shootDirection;
+        transform.position += projectileData.Speed * Time.deltaTime * shootDirection;
     }
 
-    public void Setup(Vector3 shootDirection)
+    public void Setup(Vector3 shootDirection, IProjectileData projectileData)
     {
+        this.projectileData = projectileData;
         this.shootDirection = shootDirection;
 
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
