@@ -254,7 +254,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 366886c28d9838e4090e93ace95503f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
 --- !u!95 &128816712
 Animator:
   serializedVersion: 5
@@ -337,6 +336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fe2de9ec0ee1ac42a11a9db38397781, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <CharacterData>k__BackingField: {fileID: 11400000, guid: fbeeb5235493592478b05c73d1760021, type: 2}
 --- !u!114 &128816716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3032,7 +3032,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &647489104
 Transform:
   m_ObjectHideFlags: 0

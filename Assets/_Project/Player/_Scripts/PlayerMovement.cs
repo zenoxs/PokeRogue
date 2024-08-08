@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour, IMover
 {
-    [SerializeField] private float moveSpeed;
     [SerializeField] private PlayerControls playerControls;
 
-    new Rigidbody2D rigidbody;
+    // References
+    private Rigidbody2D rb;
+    private Player player;
 
     public Vector2 MoveDir { get; private set; }
     public Vector2 LastMoveDir { get; private set; }
@@ -13,7 +14,8 @@ public class PlayerMovement : MonoBehaviour, IMover
     void Awake()
     {
         playerControls = new();
-        rigidbody = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
+        player = GetComponent<Player>();
 
     }
 
@@ -51,7 +53,7 @@ public class PlayerMovement : MonoBehaviour, IMover
 
     void Move()
     {
-        rigidbody.velocity = new Vector2(MoveDir.x * moveSpeed, MoveDir.y * moveSpeed);
+        rb.velocity = new Vector2(MoveDir.x * player.CharacterData.MoveSpeed, MoveDir.y * player.CharacterData.MoveSpeed);
     }
 
 }
