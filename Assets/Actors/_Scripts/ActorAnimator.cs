@@ -78,8 +78,8 @@ public class ActorAnimator : MonoBehaviour
       >= -60 and <= -30 => ActorOrientation.SouthEast,
       >= -120 and <= -60 => ActorOrientation.South,
       >= -150 and <= -120 => ActorOrientation.SouthWest,
-      (>= 150 and <= 180) or (>= -150) => ActorOrientation.West,
-      _ => ActorOrientation.North
+      (>= 150 and <= 180) or (<= -150) => ActorOrientation.West,
+      _ => throw new Exception($"{angle} is not handled on the GetOrientation")
     };
 
     // Debug.Log(angle + ":" + orientation);
